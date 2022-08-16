@@ -6,6 +6,7 @@ use App\Dto\User\UserRegistrationDto;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
+use App\Security\LoginFormAuthenticator;
 use App\Service\Security\FormRegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -16,6 +17,8 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
@@ -28,15 +31,17 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, FormRegistrationService $formRegistrationService): Response
+    public function register(
+        Request $request,
+        FormRegistrationService $formRegistrationService
+    ): Response
     {
         $userRegistrationDto = new UserRegistrationDto();
         $form = $this->createForm(RegistrationFormType::class, $userRegistrationDto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $formRegistrationService->registerNewUser($userRegistrationDto);
-            return $this->redirectToRoute('_preview_error');
+            return $formRegistrationService->registerNewUser($request, $userRegistrationDto);
         }
 
         return $this->render('registration/register.html.twig', [

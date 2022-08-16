@@ -6,9 +6,13 @@ use App\Dto\User\UserRegistrationDto;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Security\LoginFormAuthenticator;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class FormRegistrationService
 {
@@ -16,9 +20,11 @@ class FormRegistrationService
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EmailVerifier $emailVerifier,
+        private readonly UserAuthenticatorInterface $authenticator,
+        private readonly LoginFormAuthenticator $loginFormAuthenticator,
     ) {}
 
-    public function registerNewUser(UserRegistrationDto $registrationDto): void
+    public function registerNewUser(Request $request, UserRegistrationDto $registrationDto): ?Response
     {
         $user = new User();
         $user
@@ -40,6 +46,12 @@ class FormRegistrationService
                 ->to($user->getEmail())
                 ->subject('Please confirm your Email')
                 ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+
+        return $this->authenticator->authenticateUser(
+            $user,
+            $this->loginFormAuthenticator,
+            $request
         );
     }
 }

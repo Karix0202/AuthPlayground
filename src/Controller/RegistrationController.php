@@ -36,6 +36,10 @@ class RegistrationController extends AbstractController
         FormRegistrationService $formRegistrationService
     ): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_user_profile');
+        }
+
         $userRegistrationDto = new UserRegistrationDto();
         $form = $this->createForm(RegistrationFormType::class, $userRegistrationDto);
         $form->handleRequest($request);

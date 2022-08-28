@@ -15,6 +15,10 @@ class FacebookController extends AbstractController
     #[Route('/facebook/connect', name: 'connect_facebook_start')]
     public function connect(ClientRegistry $clientRegistry): RedirectResponse
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_user_profile');
+        }
+
         return $clientRegistry
                 ->getClient('facebook_main')
                 ->redirect([
@@ -24,19 +28,5 @@ class FacebookController extends AbstractController
 
     #[Route('/facebook/connect/check', name: 'connect_facebook_check')]
     public function connectCheck(Request $request, ClientRegistry $clientRegistry)
-    {
-        $client = $clientRegistry->getClient('facebook_main');
-
-        try {
-            $user = $client->fetchUser();
-
-            if ($user instanceof FacebookUser) {
-                return $this->render('user/facebook_user.html.twig', [
-                    'user' => $user,
-                ]);
-            }
-        } catch (IdentityProviderException $e) {
-            dd($e->getMessage());
-        }
-    }
+    {}
 }

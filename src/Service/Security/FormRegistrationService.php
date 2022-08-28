@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\LoginFormAuthenticator;
+use App\Service\Mail\EmailVerificationService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ class FormRegistrationService
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly EmailVerifier $emailVerifier,
+        private readonly EmailVerificationService $emailVerificationService,
         private readonly UserAuthenticatorInterface $authenticator,
         private readonly LoginFormAuthenticator $loginFormAuthenticator,
     ) {}
@@ -35,19 +36,12 @@ class FormRegistrationService
                     $registrationDto->getPlainPassword()
                 )
             )
+            ->setAddress($registrationDto->getAddress())
             ->setRegisteredViaSocialMedia(false)
         ;
         $this->userRepository->add($user, true);
 
-        $this->emailVerifier->sendEmailConfirmation(
-            'app_verify_email',
-            $user,
-            (new TemplatedEmail())
-                ->from(new Address('mailer@domain.com', 'AuthPlayground'))
-                ->to($user->getEmail())
-                ->subject('Please confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig')
-        );
+        $this->emailVerificationService->send($user);
 
         return $this->authenticator->authenticateUser(
             $user,

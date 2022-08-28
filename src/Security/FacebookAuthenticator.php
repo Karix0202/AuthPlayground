@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\Mail\EmailVerificationService;
 use App\Service\Security\PasswordGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -32,6 +33,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
         private readonly RouterInterface $router,
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly EmailVerificationService $emailVerificationService,
     ) {}
 
 
@@ -72,6 +74,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
                 ;
 
                 $this->userRepository->add($user, true);
+                $this->emailVerificationService->send($user);
 
                 return $user;
             })

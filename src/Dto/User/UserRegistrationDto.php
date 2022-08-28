@@ -19,6 +19,10 @@ class UserRegistrationDto
     #[Assert\Length(min: 6)]
     private string $plainPassword;
 
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $address;
+
     public function getEmail(): string
     {
         return $this->email;
@@ -37,5 +41,15 @@ class UserRegistrationDto
     public function setPlainPassword(string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): void
+    {
+        $this->address = $address;
     }
 }

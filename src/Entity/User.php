@@ -24,9 +24,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -35,6 +32,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'integer')]
     private ?int $facebookId = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $registeredViaSocialMedia = false;
 
     public function getId(): ?int
     {
@@ -118,13 +118,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getFacebookId(): ?int
     {
         return $this->facebookId;
     }
 
-    public function setFacebookId(?int $facebookId): void
+    public function setFacebookId(?int $facebookId): self
     {
         $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    public function isRegisteredViaSocialMedia(): bool
+    {
+        return $this->registeredViaSocialMedia;
+    }
+
+    public function setRegisteredViaSocialMedia(bool $registeredViaSocialMedia): self
+    {
+        $this->registeredViaSocialMedia = $registeredViaSocialMedia;
+
+        return $this;
     }
 }

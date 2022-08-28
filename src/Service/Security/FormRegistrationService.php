@@ -35,6 +35,7 @@ class FormRegistrationService
                     $registrationDto->getPlainPassword()
                 )
             )
+            ->setRegisteredViaSocialMedia(false)
         ;
         $this->userRepository->add($user, true);
 

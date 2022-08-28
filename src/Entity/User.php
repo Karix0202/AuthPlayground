@@ -30,9 +30,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
-    #[ORM\Column(type: 'integer')]
-    private ?int $facebookId = null;
-
     #[ORM\Column(type: 'boolean')]
     private bool $registeredViaSocialMedia = false;
 
@@ -114,19 +111,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-
-    public function getFacebookId(): ?int
-    {
-        return $this->facebookId;
-    }
-
-    public function setFacebookId(?int $facebookId): self
-    {
-        $this->facebookId = $facebookId;
 
         return $this;
     }

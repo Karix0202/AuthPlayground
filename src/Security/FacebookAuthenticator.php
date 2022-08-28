@@ -12,10 +12,7 @@ use League\OAuth2\Client\Provider\FacebookUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -32,7 +29,6 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
 
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
-        private readonly EntityManagerInterface $entityManager,
         private readonly RouterInterface $router,
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -73,7 +69,6 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
                     ->setEmail($facebookUser->getEmail())
                     ->setRegisteredViaSocialMedia(true)
                     ->setPassword($this->passwordHasher->hashPassword($user, PasswordGenerator::generate()))
-                    ->setFacebookId(1111);
                 ;
 
                 $this->userRepository->add($user, true);

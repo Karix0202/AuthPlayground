@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Mail\EmailVerificationService;
 use App\Service\Security\PasswordGenerator;
-use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use League\OAuth2\Client\Provider\FacebookUser;
@@ -36,7 +35,6 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
         private readonly EmailVerificationService $emailVerificationService,
     ) {}
 
-
     public function start(Request $request, AuthenticationException $authException = null): RedirectResponse
     {
         return new RedirectResponse(
@@ -59,6 +57,10 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
                 $facebookUser = $client->fetchUserFromToken($accessToken);
 
                 if (!($facebookUser instanceof FacebookUser)) {
+                    return null;
+                }
+
+                if (!$facebookUser->getEmail()) {
                     return null;
                 }
 
